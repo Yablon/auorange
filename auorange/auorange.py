@@ -28,11 +28,7 @@ class AudioLPC:
   def autocorrelation_to_lpc(self, ac):
     ac = ac[0:self.lpc_order + 1, :]
     ac = ac * self.lag_window
-    return np.concatenate([
-        np.reshape(levinson_durbin(self.lpc_order, ac[:, i]), [-1, 1])
-        for i in range(ac.shape[-1])
-    ],
-                          axis=-1)
+    return levinson_durbin(self.lpc_order, ac)
 
   def linear_to_autocorrelation(self, linear):
     power = linear**2
