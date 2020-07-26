@@ -8,19 +8,23 @@ from auorange.utils import levinson_durbin
 
 
 def load_wav(path, sample_rate):
-  return librosa.core.load(path, sr=sample_rate)[0]
+  sr, raw_data = scipy.io.wavfile.read(path)
+  if sample_rate != sr:
+    raise ValueError('sample rate not equal')
+  raw_data = raw_data.astype(np.float32)
+  return (raw_data + 32768) / 65535. * 2 - 1
 
 
 def save_wav(wav, path, sample_rate):
-  wav *= 32767
-  scipy.io.wavfile.write(path, sample_rate, wav.astype(np.int16))
+  data = (wav + 1) / 2 * 65535. - 32768
+  scipy.io.wavfile.write(path, sample_rate, data.astype(np.int16))
 
 
 class AudioLPC:
 
-  def __init__(self, lpc_order, clip_lpc, sample_rate):
+  def __init__(self, lpc_order, clip_lpc, sample_rate, f0=40.):
     self.lpc_order = lpc_order
-    theta = (2 * np.pi * 40. / sample_rate)**2
+    theta = (2 * np.pi * f0 / sample_rate)**2
     self.lag_window = np.exp(
         [[-0.5 * theta * i**2] for i in range(lpc_order + 1)])
     self.clip_lpc = clip_lpc
