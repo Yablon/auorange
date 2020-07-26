@@ -1,8 +1,7 @@
 import matplotlib.pyplot as plt
+
 from auorange import auorange
 from auorange.utils import plot, plot_spec
-import argparse
-
 
 wav_name = 'wavs/LJ001-0001.wav'
 sample_rate = 22050
