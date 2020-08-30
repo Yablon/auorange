@@ -83,7 +83,7 @@ class LibrosaAudioFeature:
                                           n_mels=self.num_mels,
                                           fmin=20.,
                                           fmax=sample_rate / 2)
-    self._inv_mel_basis = np.maximum(1e-12, np.linalg.pinv(self._mel_basis))
+    self._inv_mel_basis = np.linalg.pinv(self._mel_basis)
     self.lpc_extractor = lpc_extractor
 
   def mel_spectrogram(self, y):
@@ -97,7 +97,7 @@ class LibrosaAudioFeature:
 
   def mel_to_linear(self, mel):
     mel = denormalize_spec(mel)
-    return np.dot(self._inv_mel_basis, mel)
+    return np.maximum(np.dot(self._inv_mel_basis, mel), 1e-12)
 
   def _linear_to_mel(self, spectrogram):
     return np.dot(self._mel_basis, spectrogram)
