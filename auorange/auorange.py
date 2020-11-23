@@ -4,12 +4,13 @@ import librosa
 import numpy as np
 import scipy
 from scipy.fftpack import ifft
+from scipy.io import wavfile
 
 from auorange.utils import levinson_durbin
 
 
 def load_wav(path, sample_rate):
-  sr, raw_data = scipy.io.wavfile.read(path)
+  sr, raw_data = wavfile.read(path)
   if sample_rate != sr:
     raise ValueError('sample rate not equal')
   raw_data = raw_data.astype(np.float32)
@@ -18,7 +19,7 @@ def load_wav(path, sample_rate):
 
 def save_wav(wav, path, sample_rate):
   data = (wav + 1) / 2 * 65535. - 32768
-  scipy.io.wavfile.write(path, sample_rate, data.astype(np.int16))
+  wavfile.write(path, sample_rate, data.astype(np.int16))
 
 
 class AudioLPC:
