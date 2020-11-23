@@ -129,4 +129,4 @@ def normalize_spec(spectrogram):
 
 
 def denormalize_spec(spectrogram):
-  return np.exp(spectrogram) - 1. / 10000
+  return (np.exp(spectrogram) - 1.) / 10000
