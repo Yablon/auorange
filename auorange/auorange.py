@@ -39,7 +39,7 @@ class AudioLPC:
   def linear_to_autocorrelation(self, linear):
     power = linear**2
     fft_power = np.concatenate([power, power[::-1, :][1:-1, :]], axis=0)
-    return ifft(fft_power, n=fft_power.shape[-1], axis=0).real
+    return ifft(fft_power, n=fft_power.shape[0], axis=0).real
 
   def linear_to_lpc(self, linear, repeat=None):
     autocorrelation = self.linear_to_autocorrelation(linear)
