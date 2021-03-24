@@ -49,13 +49,13 @@ class AudioLPC:
       return np.repeat(lpcs, repeat, axis=-1)
     return lpcs
 
-  def lpc_predict(self, lpcs, signal_slice):
+  def predict(self, lpcs, signal_slice):
     pred = np.sum(lpcs * signal_slice, axis=0)
     if self.clip_lpc:
       pred = np.clip(pred, -1., 1.)
     return pred
 
-  def lpc_reconstruction(self, lpcs, audio):
+  def reconstruct(self, lpcs, audio):
     num_points = lpcs.shape[-1]
     if audio.shape[0] == num_points:
       audio = np.pad(audio, ((self.lpc_order, 0)), 'constant')
@@ -64,7 +64,7 @@ class AudioLPC:
     indices = np.reshape(np.arange(self.lpc_order), [-1, 1]) + np.arange(
         lpcs.shape[-1])
     signal_slices = audio[indices]
-    pred = self.lpc_predict(lpcs, signal_slices)
+    pred = self.predict(lpcs, signal_slices)
     origin_audio = audio[self.lpc_order:]
     error = origin_audio - pred
     return origin_audio, pred, error
@@ -110,7 +110,7 @@ class LibrosaAudioFeature:
   def lpc_audio(self, mel, audio):
     lpcs = self.mel_to_lpc(mel)
     lpcs = lpcs[:, :audio.shape[-1]]
-    return self.lpc_extractor.lpc_reconstruction(lpcs, audio)
+    return self.lpc_extractor.reconstruct(lpcs, audio)
 
   def _stft(self, y):
     return librosa.stft(y=y,
