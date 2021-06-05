@@ -67,7 +67,7 @@ def multiband_linear_spectrogram(full_band_linear, keep_linear_shape=True):
   Returns:
       np.array: sub-band linear spectrograms, shape is [FFT_SIZE // 2 + 1, num_subbands, num_frames]
   """
-  num_linear_bins = linear.shape[0]
+  num_linear_bins = full_band_linear.shape[0]
   fft_size = (num_linear_bins - 1) * 2
   num_bands = fft_size // 2 // 4
   get_band = lambda idx: np.expand_dims(
