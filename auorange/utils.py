@@ -53,3 +53,36 @@ def levinson_durbin(n, pAC):
       pLP[j, :] = pTmp[j, :]
 
   return pLP
+
+
+def multiband_linear_spectrogram(full_band_linear, keep_linear_shape=True):
+  """split full band linear spectrogram to sub-band linear spectrogram
+
+  Args:
+      full_band_linear (np.array): full band linear spectrogram generated from mel_to_linear,
+                                   shape is [FFT_SIZE // 2 + 1, num_frames]
+      keep_linear_shape (bool, optional): whether to keep the shape of sub-band linear spectrogram
+                                          same as full band linear spectrogram. Defaults to True.
+
+  Returns:
+      np.array: sub-band linear spectrograms, shape is [FFT_SIZE // 2 + 1, num_subbands, num_frames]
+  """
+  num_linear_bins = linear.shape[0]
+  fft_size = (num_linear_bins - 1) * 2
+  num_bands = fft_size // 2 // 4
+  get_band = lambda idx: np.expand_dims(
+      full_band_linear[idx * num_bands:(idx + 1) * num_bands + 1, :], axis=1)
+  if keep_linear_shape:
+
+    def pad_to_linear_shape(band, idx):
+      pad_width = [[
+          idx * num_bands, num_linear_bins - (idx + 1) * num_bands - 1
+      ], [0, 0], [0, 0]]
+      return np.pad(band, pad_width)
+
+    bands = np.concatenate(
+        [pad_to_linear_shape(get_band(i), i) for i in range(4)], axis=1)
+
+  else:
+    bands = np.concatenate([get_band(i) for i in range(4)], axis=1)
+  return bands
